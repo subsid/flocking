@@ -10,9 +10,9 @@ export default function Boid(type, scene) {
     new T.Vector3(getRandInRange(80, 100), getRandInRange(-10, 10), 0) :
     new T.Vector3(getRandInRange(-80, -100), getRandInRange(-10, 10), 0);
   this.velocity = new T.Vector3(
-    getRandInRange(-1, 1),
-    getRandInRange(-1, 1),
-    getRandInRange(-1, 1),
+    getRandInRange(-1, 10),
+    getRandInRange(-1, 10),
+    getRandInRange(-1, 10),
   );
 
   this.acceleration = new T.Vector3(0, 0, 0);
@@ -26,15 +26,16 @@ export default function Boid(type, scene) {
 }
 
 // Run an iteration of the flock
-Boid.prototype.step = function (flock) {
-  this.accumulate(flock);
+Boid.prototype.step = function (flock, spheres) {
+  this.accumulate(flock, spheres);
   this.update();
   this.obj.mesh.position.set(this.position.x, this.position.y, this.position.z);
 };
 
 // Apply Forces
-Boid.prototype.accumulate = function (flock) {
-  const separation = this.separate(flock).multiplyScalar(0.02 * this.mass);
+Boid.prototype.accumulate = function (flock, spheres) {
+  const obstacleCollisionAvoidance = this.obstacleCollisionAvoidance(spheres);
+  const flockCollisionAvoidance = this.collisionAvoidance(flock).multiplyScalar(0.02 * this.mass);
   const alignment = this.align(flock).multiplyScalar(0.05);
   const cohesion = this.cohesion(flock).multiplyScalar(0.01);
   const centering = this.steer(this.home).multiplyScalar(0.0001);
@@ -42,11 +43,60 @@ Boid.prototype.accumulate = function (flock) {
     this.position.distanceTo(this.home) * this.mass,
   );
 
-  this.acceleration.add(separation);
+  this.acceleration.add(obstacleCollisionAvoidance);
+  this.acceleration.add(flockCollisionAvoidance);
   this.acceleration.add(alignment);
   this.acceleration.add(cohesion);
   this.acceleration.add(centering);
   this.acceleration.divideScalar(this.mass);
+};
+
+Boid.prototype.obstacleCollisionAvoidance = function (spheres) {
+  const total = new T.Vector3(0, 0, 0);
+  let count = 0;
+
+  for (let i = 0; i < spheres.length; i++) {
+    const sphere = spheres[i];
+
+    const velocityDirection = this.velocity.clone().normalize();
+    const boidToSphereVector = sphere.position.clone().sub(this.position);
+    const sClose = boidToSphereVector.dot(velocityDirection);
+    const dc = this.velocity.length() * 50;
+    const xClose = this.position.clone().add(velocityDirection.multiplyScalar(sClose));
+
+    if (sClose < 0) {
+      null;
+    } else {
+      if (sClose > dc) {
+        null
+      } else {
+        const d = xClose.clone().sub(sphere.position).length();
+        const R = sphere.geometry.parameters.radius;
+        if (d > R) {
+          null;
+        } else {
+          // debugger
+          const vPerpendicular = xClose.clone().sub(sphere.position).normalize();
+          const xT = sphere.position.clone().add(vPerpendicular.multiplyScalar(R));
+          const dT = xT.clone().sub(this.position).length();
+          const vT = this.velocity.clone().dot(xT.clone().sub(this.position)) / dT;
+          const tT = dT / vT;
+          const deltaVs = velocityDirection.clone().cross(
+            xT.clone().sub(this.position),
+          ).length() / tT;
+          const aMag = (2 * deltaVs) / tT;
+          total.add(vPerpendicular.clone().multiplyScalar(aMag));
+          count += 1;
+        }
+      }
+    }
+  }
+
+  if (count > 0) {
+    total.divideScalar(count);
+    total.limit(1);
+  }
+  return total;
 };
 
 // Update Movement Vectors
@@ -59,13 +109,13 @@ Boid.prototype.update = function () {
   this.obj.mesh.lookAt(pointAt);
 };
 
-// Separation Function (personal space)
-Boid.prototype.separate = function (flock) {
-  const minRange = 60;
+// Apply force in the direction opposite to the neighboring boid's position,
+// weighted by inverse distance.
+Boid.prototype.collisionAvoidance = function (flock, minRange = 60) {
   let currBoid;
   const total = new T.Vector3(0, 0, 0);
   let count = 0;
-  // Find total weight of separation
+  // Sum up all the forces on a boid, due to its neighbors.
   for (let i = 0; i < flock.length; i++) {
     currBoid = flock[i];
     const dist = this.position.distanceTo(currBoid.position);
@@ -79,7 +129,7 @@ Boid.prototype.separate = function (flock) {
       count += 1;
     }
   }
-  // Average out total weight
+
   if (count > 0) {
     total.divideScalar(count);
     total.normalize();

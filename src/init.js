@@ -19,19 +19,30 @@ function setupLights(scene) {
   scene.add(lightAmb, lightHem, lightDir);
 }
 
-function setupFlock(numA, numB, boids, scene) {
+function setupFlock(numA, boids, scene) {
   // Popoulate X-Boid ships
   let i = 0;
   while (i < numA) {
     boids[i] = new Boid(1, scene);
     i += 1;
   }
+}
 
-  // Populate O-Boid ships
-  while (i < numA + numB) {
-    boids[i] = new Boid(0, scene);
-    i += 1;
-  }
+function setupPlanets(spheres, scene) {
+  const earthGeometry = new T.SphereGeometry(10, 30, 30);
+  const earthMaterial = new T.MeshPhongMaterial();
+  const earthMesh = new T.Mesh(earthGeometry, earthMaterial);
+  earthMesh.position.add(new T.Vector3(-50, 0, 0));
+  scene.add(earthMesh);
+  spheres.push(earthMesh);
+
+  const marsGeometry = new T.SphereGeometry(50, 30, 30);
+  const marsMaterial = new T.MeshPhongMaterial();
+  const marsMesh = new T.Mesh(marsGeometry, marsMaterial);
+  marsMesh.position.add(new T.Vector3(-200, 0, 0));
+  spheres.push(marsMesh);
+
+  scene.add(marsMesh);
 }
 
 export default function init() {
@@ -43,13 +54,16 @@ export default function init() {
   camera.lookAt(scene.position);
 
   const boids = [];
+  const spheres = [];
 
   setupLights(scene);
-  setupFlock(10, 10, boids, scene);
+  setupFlock(10, boids, scene);
+  setupPlanets(spheres, scene);
 
   return {
     h,
     boids,
+    spheres,
     scene,
     camera,
     clock,

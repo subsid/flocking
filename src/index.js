@@ -1,4 +1,5 @@
 import * as T from 'three';
+import OrbitControls from 'three-orbitcontrols';
 
 import './style/style.css';
 import init from './init';
@@ -41,6 +42,11 @@ function main() {
   document.body.appendChild(component());
   const state = init();
   const renderer = Renderer(state);
+  const controls = new OrbitControls(state.camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.25;
+  controls.enableZoom = false;
+  state.controls = controls;
 
   animate(state, mkRender(renderer, state));
 }
