@@ -1,0 +1,17 @@
+{
+  "extends": "airbnb",
+  env: {
+    'browser': true
+  },
+  "rules": {
+    "arrow-body-style": ["error", "always"],
+    "no-underscore-dangle": "off",
+    "no-unused-expressions": ["off"],
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }],
+    "no-plusplus": ["error", {"allowForLoopAfterthoughts": true}],
+    "no-param-reassign": ["error", { "props": false }],
+    "func-names": ["off"],
+    "function-paren-newline": ["off"],
+    import/prefer-default-export: 0
+  }
+}

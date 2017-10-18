@@ -1,0 +1,10 @@
+.render {
+  background-color: 'blue'
+}
+
+body {
+  font-family: Monospace;
+  background-color: #f0f0f0;
+  margin: 0px;
+  overflow: hidden;
+}
