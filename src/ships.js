@@ -10,12 +10,12 @@ export const planetLocations = {
 // Color list
 export const col = {
   red: 0xCC2200,
-  blue: 0x333399,
   black: 0x222222,
   grey: 0x111133,
   white: 0xCCCCAA,
   green: 0x00FF00,
   void: 0x111111,
+  tie: 678591,
 };
 
 // Geometry types
@@ -29,9 +29,9 @@ const geom = {
 // Materials
 const mat = {
   x_hull: new T.MeshStandardMaterial({ color: col.white }),
-  o_hull: new T.MeshStandardMaterial({ color: col.grey, shading: T.FlatShading }),
+  o_hull: new T.MeshStandardMaterial({ color: col.tie, shading: T.FlatShading }),
   x_dec: new T.MeshStandardMaterial({ color: col.red }),
-  o_dec: new T.MeshStandardMaterial({ color: col.blue }),
+  o_dec: new T.MeshStandardMaterial({ color: col.grey }),
   x_pit: new T.MeshStandardMaterial({ color: col.black }),
   o_pit: new T.MeshStandardMaterial({ color: col.green }),
 };

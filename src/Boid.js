@@ -15,13 +15,13 @@ export default function Boid(type, scene) {
       getRandInRange(-10, 10), 0);
 
   this.velocity = new T.Vector3(
-    getRandInRange(-1, 10),
-    getRandInRange(-1, 10),
-    getRandInRange(-1, 10),
+    getRandInRange(-1, 1),
+    getRandInRange(-1, 1),
+    getRandInRange(-1, 1),
   );
 
   this.acceleration = new T.Vector3(0, 0, 0);
-  this.mass = (type) ? 1 : 5;
+  this.mass = (type) ? 1 : 2;
 
   // Type determines boid geometry, home location, and starting position
   this.obj = (type) ? new XShip() : new OShip();
