@@ -45,7 +45,7 @@ function main() {
   const controls = new OrbitControls(state.camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.25;
-  controls.enableZoom = false;
+  // controls.enableZoom = false;
   state.controls = controls;
 
   animate(state, mkRender(renderer, state));

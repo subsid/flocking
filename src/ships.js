@@ -1,7 +1,14 @@
 import * as T from 'three';
 
+// Planet locations
+export const planetLocations = {
+  hoth: [-200, 0, 0],
+  yavin: [200, 0, 0],
+  earth: [0, 0, 0],
+};
+
 // Color list
-const col = {
+export const col = {
   red: 0xCC2200,
   blue: 0x333399,
   black: 0x222222,
@@ -48,19 +55,19 @@ export function XShip() {
   dorsal.rotateY(T.Math.degToRad(90));
   dorsal.rotateX(T.Math.degToRad(-90));
   dorsal.scale.set(6, 1, 8);
-  const fin_ul = new T.Mesh(geom.box, mat.x_hull);
-  fin_ul.position.set(0, 0, -4);
-  fin_ul.rotateZ(T.Math.degToRad(30));
-  fin_ul.scale.set(20, 0.5, 3);
-  const fin_ur = new T.Mesh(geom.box, mat.x_hull);
-  fin_ur.position.set(0, 0, -4);
-  fin_ur.rotateZ(T.Math.degToRad(-30));
-  fin_ur.scale.set(20, 0.5, 3);
+  const finUl = new T.Mesh(geom.box, mat.x_hull);
+  finUl.position.set(0, 0, -4);
+  finUl.rotateZ(T.Math.degToRad(30));
+  finUl.scale.set(20, 0.5, 3);
+  const finUr = new T.Mesh(geom.box, mat.x_hull);
+  finUr.position.set(0, 0, -4);
+  finUr.rotateZ(T.Math.degToRad(-30));
+  finUr.scale.set(20, 0.5, 3);
 
-  const x_ship = new T.Group();
-  x_ship.add(nose, beacon, pit, hull, dorsal, fin_ul, fin_ur);
-  x_ship.castShadow = true;
-  this.mesh = x_ship;
+  const xShip = new T.Group();
+  xShip.add(nose, beacon, pit, hull, dorsal, finUl, finUr);
+  xShip.castShadow = true;
+  this.mesh = xShip;
   // scene.add(x_ship);
   // x_ship.position.set(-20,0,0);
 }
@@ -77,32 +84,32 @@ export function OShip() {
   pit.position.set(0, 0, 4);
   pit.rotateX(T.Math.degToRad(90));
   pit.scale.set(3.5, 2.5, 2.5);
-  const wing_l = new T.Mesh(geom.tri, mat.o_dec);
-  wing_l.position.set(4, -2, -1);
-  wing_l.rotateX(T.Math.degToRad(90));
-  wing_l.rotateZ(T.Math.degToRad(-30));
-  wing_l.scale.set(6, 1, 3);
-  const wing_r = new T.Mesh(geom.tri, mat.o_dec);
-  wing_r.position.set(-4, -2, -1);
-  wing_r.rotateX(T.Math.degToRad(90));
-  wing_r.rotateZ(T.Math.degToRad(30));
-  wing_r.scale.set(6, 1, 3);
+  const wingL = new T.Mesh(geom.tri, mat.o_dec);
+  wingL.position.set(4, -2, -1);
+  wingL.rotateX(T.Math.degToRad(90));
+  wingL.rotateZ(T.Math.degToRad(-30));
+  wingL.scale.set(6, 1, 3);
+  const wingR = new T.Mesh(geom.tri, mat.o_dec);
+  wingR.position.set(-4, -2, -1);
+  wingR.rotateX(T.Math.degToRad(90));
+  wingR.rotateZ(T.Math.degToRad(30));
+  wingR.scale.set(6, 1, 3);
 
-  const fin_l = new T.Mesh(geom.tri, mat.o_dec);
-  fin_l.position.set(4, 3, -2);
-  fin_l.rotateZ(T.Math.degToRad(60));
-  fin_l.rotateY(T.Math.degToRad(30));
-  fin_l.scale.set(6, 1, 3);
-  const fin_r = new T.Mesh(geom.tri, mat.o_dec);
-  fin_r.position.set(-4, 3, -2);
-  fin_r.rotateZ(T.Math.degToRad(-60));
-  fin_r.rotateY(T.Math.degToRad(-30));
-  fin_r.scale.set(6, 1, 3);
+  const finL = new T.Mesh(geom.tri, mat.o_dec);
+  finL.position.set(4, 3, -2);
+  finL.rotateZ(T.Math.degToRad(60));
+  finL.rotateY(T.Math.degToRad(30));
+  finL.scale.set(6, 1, 3);
+  const finR = new T.Mesh(geom.tri, mat.o_dec);
+  finR.position.set(-4, 3, -2);
+  finR.rotateZ(T.Math.degToRad(-60));
+  finR.rotateY(T.Math.degToRad(-30));
+  finR.scale.set(6, 1, 3);
 
-  const o_ship = new T.Group();
-  o_ship.add(nose, hull, pit, wing_l, fin_l, fin_r, wing_r);
-  o_ship.castShadow = true;
-  this.mesh = o_ship;
+  const Oship = new T.Group();
+  Oship.add(nose, hull, pit, wingL, finL, finR, wingR);
+  Oship.castShadow = true;
+  this.mesh = Oship;
   // scene.add(o_ship);
   // o_ship.position.set(20,0,0);
 }

@@ -1,5 +1,7 @@
 import * as T from 'three';
 import Boid from './Boid';
+import {getRandInRange} from './random';
+
 
 const windowWidth = window.innerWidth;
 const windowHeight = window.innerHeight;
@@ -12,37 +14,90 @@ function setupLights(scene) {
   const lightAmb = new T.AmbientLight(0x999999, 1);
 
   const lightHem = new T.HemisphereLight(0xFFFFCC, 0x222200, 1);
-  lightHem.position.setY(15);
+  lightHem.position.setY(20);
 
   const lightDir = new T.DirectionalLight();
 
-  scene.add(lightAmb, lightHem, lightDir);
+  scene.add(lightAmb, lightDir);
 }
 
-function setupFlock(numA, boids, scene) {
+function setupFlock(numA, numB, boids, scene) {
   // Popoulate X-Boid ships
   let i = 0;
   while (i < numA) {
     boids[i] = new Boid(1, scene);
     i += 1;
   }
+
+  while (i < numA + numB) {
+    boids[i] = new Boid(0, scene);
+    i += 1;
+  }
+}
+
+function setupAsteroidField(num, spheres, scene) {
+  const asteroidGeometry = new T.DodecahedronGeometry(15);
+  const asteroidMaterial = new T.MeshPhongMaterial({
+    map: T.ImageUtils.loadTexture('./assets/images/asteroid.jpeg'),
+    bumpMap: T.ImageUtils.loadTexture('./assets/images/asteroidbump.jpg'),
+    bumpScale: 10,
+  });
+
+  for (let i = 0; i < num; i++) {
+    const asteroidMesh = new T.Mesh(asteroidGeometry, asteroidMaterial);
+    asteroidMesh.position.add(new T.Vector3(
+      getRandInRange(-300, 300),
+      getRandInRange(70, 300),
+      getRandInRange(-100, 100),
+    ));
+    scene.add(asteroidMesh);
+    spheres.push(asteroidMesh);
+  }
 }
 
 function setupPlanets(spheres, scene) {
-  const earthGeometry = new T.SphereGeometry(10, 30, 30);
-  const earthMaterial = new T.MeshPhongMaterial();
+  const starFieldGeometry = new T.SphereGeometry(maxWidth, 32, 32);
+  const starFieldMaterial = new T.MeshPhongMaterial({
+    map: T.ImageUtils.loadTexture('./assets/images/galaxy_starfield.png'),
+    side: T.BackSide,
+  });
+  const starFieldMesh = new T.Mesh(starFieldGeometry, starFieldMaterial);
+  starFieldMesh.position.add(new T.Vector3(-50, 0, 0));
+
+  scene.add(starFieldMesh);
+
+  const earthGeometry = new T.SphereGeometry(20, 30, 30);
+  const earthMaterial = new T.MeshPhongMaterial({
+    map: T.ImageUtils.loadTexture('./assets/images/earthmap1k.jpg'),
+    bumpMap: T.ImageUtils.loadTexture('./assets/images/earthbump1k.jpg'),
+    bumpScale: 1,
+  });
   const earthMesh = new T.Mesh(earthGeometry, earthMaterial);
   earthMesh.position.add(new T.Vector3(-50, 0, 0));
   scene.add(earthMesh);
   spheres.push(earthMesh);
 
-  const marsGeometry = new T.SphereGeometry(50, 30, 30);
-  const marsMaterial = new T.MeshPhongMaterial();
-  const marsMesh = new T.Mesh(marsGeometry, marsMaterial);
-  marsMesh.position.add(new T.Vector3(-200, 0, 0));
-  spheres.push(marsMesh);
+  const hothGeometry = new T.SphereGeometry(50, 30, 30);
+  const hothMaterial = new T.MeshPhongMaterial({
+    map: T.ImageUtils.loadTexture('./assets/images/hothmap1k.jpg'),
+  });
 
-  scene.add(marsMesh);
+  const hothMesh = new T.Mesh(hothGeometry, hothMaterial);
+  hothMesh.position.add(new T.Vector3(-200, 0, 0));
+  spheres.push(hothMesh);
+
+  scene.add(hothMesh);
+
+  const yavinGeometry = new T.SphereGeometry(50, 30, 30);
+  const yavinMaterial = new T.MeshPhongMaterial({
+    map: T.ImageUtils.loadTexture('./assets/images/yavinmap.jpg'),
+  });
+
+  const yavinMesh = new T.Mesh(yavinGeometry, yavinMaterial);
+  yavinMesh.position.add(new T.Vector3(200, 0, 0));
+  spheres.push(yavinMesh);
+
+  scene.add(yavinMesh);
 }
 
 export default function init() {
@@ -57,8 +112,9 @@ export default function init() {
   const spheres = [];
 
   setupLights(scene);
-  setupFlock(10, boids, scene);
+  setupFlock(20, 10, boids, scene);
   setupPlanets(spheres, scene);
+  setupAsteroidField(50, spheres, scene);
 
   return {
     h,

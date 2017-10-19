@@ -1,14 +1,19 @@
 import * as T from 'three';
 import { getRandInRange } from './random';
-import { XShip, OShip } from './ships';
+import { planetLocations, XShip, OShip } from './ships';
 
 export default function Boid(type, scene) {
   this.type = type;
 
   // Initial movement vectors
   this.position = (type) ?
-    new T.Vector3(getRandInRange(80, 100), getRandInRange(-10, 10), 0) :
-    new T.Vector3(getRandInRange(-80, -100), getRandInRange(-10, 10), 0);
+    new T.Vector3(
+      getRandInRange(planetLocations.hoth[0] - 20, planetLocations.hoth[0] + 20),
+      getRandInRange(-10, 10), 0) :
+    new T.Vector3(
+      getRandInRange(planetLocations.yavin[0] - 20, planetLocations.yavin[0] + 20),
+      getRandInRange(-10, 10), 0);
+
   this.velocity = new T.Vector3(
     getRandInRange(-1, 10),
     getRandInRange(-1, 10),
@@ -16,11 +21,13 @@ export default function Boid(type, scene) {
   );
 
   this.acceleration = new T.Vector3(0, 0, 0);
-  this.mass = (type) ? 1 : 15;
+  this.mass = (type) ? 1 : 5;
 
   // Type determines boid geometry, home location, and starting position
   this.obj = (type) ? new XShip() : new OShip();
-  this.home = (type) ? new T.Vector3(-50, 0, 0) : new T.Vector3(50, 0, 0);
+  this.home = (type) ?
+    new T.Vector3(...planetLocations.hoth) :
+    new T.Vector3(...planetLocations.yavin);
 
   scene.add(this.obj.mesh);
 }
@@ -61,33 +68,31 @@ Boid.prototype.obstacleCollisionAvoidance = function (spheres) {
     const velocityDirection = this.velocity.clone().normalize();
     const boidToSphereVector = sphere.position.clone().sub(this.position);
     const sClose = boidToSphereVector.dot(velocityDirection);
-    const dc = this.velocity.length() * 50;
+    const dc = this.velocity.length() * 70;
     const xClose = this.position.clone().add(velocityDirection.multiplyScalar(sClose));
 
     if (sClose < 0) {
       null;
+    } else if (sClose > dc) {
+      null;
     } else {
-      if (sClose > dc) {
-        null
+      const d = xClose.clone().sub(sphere.position).length();
+      const R = sphere.geometry.parameters.radius;
+      if (d > R) {
+        null;
       } else {
-        const d = xClose.clone().sub(sphere.position).length();
-        const R = sphere.geometry.parameters.radius;
-        if (d > R) {
-          null;
-        } else {
-          // debugger
-          const vPerpendicular = xClose.clone().sub(sphere.position).normalize();
-          const xT = sphere.position.clone().add(vPerpendicular.multiplyScalar(R));
-          const dT = xT.clone().sub(this.position).length();
-          const vT = this.velocity.clone().dot(xT.clone().sub(this.position)) / dT;
-          const tT = dT / vT;
-          const deltaVs = velocityDirection.clone().cross(
-            xT.clone().sub(this.position),
-          ).length() / tT;
-          const aMag = (2 * deltaVs) / tT;
-          total.add(vPerpendicular.clone().multiplyScalar(aMag));
-          count += 1;
-        }
+        // debugger
+        const vPerpendicular = xClose.clone().sub(sphere.position).normalize();
+        const xT = sphere.position.clone().add(vPerpendicular.multiplyScalar(R * 4));
+        const dT = xT.clone().sub(this.position).length();
+        const vT = this.velocity.clone().dot(xT.clone().sub(this.position)) / dT;
+        const tT = dT / vT;
+        const deltaVs = velocityDirection.clone().cross(
+          xT.clone().sub(this.position),
+        ).length() / tT;
+        const aMag = (2 * deltaVs) / tT;
+        total.add(vPerpendicular.clone().multiplyScalar(aMag));
+        count += 1;
       }
     }
   }
