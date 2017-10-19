@@ -21,16 +21,16 @@ function setupLights(scene) {
   scene.add(lightAmb, lightDir);
 }
 
-function setupFlock(numA, numB, boids, scene) {
+function setupFlock(numA, numB, vMax, boids, scene) {
   // Popoulate X-Boid ships
   let i = 0;
   while (i < numA) {
-    boids[i] = new Boid(1, scene);
+    boids[i] = new Boid(1, vMax, scene);
     i += 1;
   }
 
   while (i < numA + numB) {
-    boids[i] = new Boid(0, scene);
+    boids[i] = new Boid(0, vMax, scene);
     i += 1;
   }
 }
@@ -100,7 +100,7 @@ function setupPlanets(spheres, scene) {
   scene.add(yavinMesh);
 }
 
-export default function init() {
+export default function init(controller) {
   const h = 0.2;
   const clock = new T.Clock();
   const scene = new T.Scene();
@@ -112,9 +112,9 @@ export default function init() {
   const spheres = [];
 
   setupLights(scene);
-  setupFlock(20, 10, boids, scene);
+  setupFlock(controller.xWings, controller.tieFighters, controller.vMax, boids, scene);
   setupPlanets(spheres, scene);
-  setupAsteroidField(50, spheres, scene);
+  setupAsteroidField(controller.asteroids, spheres, scene);
 
   return {
     h,

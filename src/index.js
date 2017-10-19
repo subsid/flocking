@@ -38,17 +38,47 @@ function mkRender(renderer, { scene, camera }) {
   };
 }
 
-function main() {
-  document.body.appendChild(component());
-  const state = init();
+function start(controller) {
+  if (window.animationId !== null) {
+    cancelAnimationFrame(window.animationId);
+  }
+
+  const state = init(controller);
   const renderer = Renderer(state);
   const controls = new OrbitControls(state.camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.25;
+
   // controls.enableZoom = false;
   state.controls = controls;
 
+  window.animate = true;
   animate(state, mkRender(renderer, state));
+}
+
+function main() {
+  document.body.appendChild(component());
+  const gui = new window.dat.GUI();
+  const controller = {
+    asteroids: 0,
+    xWings: 10,
+    tieFighters: 0,
+    vMax: 1,
+  };
+
+  const obj = {
+    start() {
+      window.animate = false;
+      start(controller);
+    },
+  };
+
+  gui.add(obj, 'start');
+  gui.add(controller, 'asteroids', 0, 50).step(1);
+  gui.add(controller, 'xWings', 0, 30).step(1);
+  gui.add(controller, 'tieFighters', 0, 10).step(1);
+  gui.add(controller, 'vMax', 1, 100).step(1);
+  gui.close();
 }
 
 main();

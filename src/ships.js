@@ -1,3 +1,6 @@
+// Ship designs and some flocking behavior was
+// taken from https://codepen.io/coaster/pen/QpqVjP
+
 import * as T from 'three';
 
 // Planet locations

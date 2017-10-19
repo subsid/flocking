@@ -2,7 +2,7 @@ import * as T from 'three';
 import { getRandInRange } from './random';
 import { planetLocations, XShip, OShip } from './ships';
 
-export default function Boid(type, scene) {
+export default function Boid(type, vMax, scene) {
   this.type = type;
 
   // Initial movement vectors
@@ -15,9 +15,9 @@ export default function Boid(type, scene) {
       getRandInRange(-10, 10), 0);
 
   this.velocity = new T.Vector3(
-    getRandInRange(-1, 1),
-    getRandInRange(-1, 1),
-    getRandInRange(-1, 1),
+    getRandInRange(-1, vMax),
+    getRandInRange(-1, vMax),
+    getRandInRange(-1, vMax),
   );
 
   this.acceleration = new T.Vector3(0, 0, 0);
