@@ -6,7 +6,7 @@
   "author": "Siddharth <sidharth3930@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "cp ./src/index.html ./dist && webpack --watch",
+    "build": "cp ./src/index.html ./dist && webpack",
     "start": "cp ./src/index.html ./dist && webpack-dev-server"
   },
   "dependencies": {
