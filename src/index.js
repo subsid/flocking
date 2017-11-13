@@ -60,9 +60,9 @@ function main() {
   document.body.appendChild(component());
   const gui = new window.dat.GUI();
   const controller = {
-    asteroids: 0,
+    asteroids: 25,
     xWings: 10,
-    tieFighters: 0,
+    tieFighters: 5,
     vMax: 1,
   };
 
@@ -72,6 +72,7 @@ function main() {
       start(controller);
     },
   };
+  obj.start();
 
   gui.add(obj, 'start');
   gui.add(controller, 'asteroids', 0, 50).step(1);
