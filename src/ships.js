@@ -5,8 +5,14 @@ import * as T from 'three';
 
 // Planet locations
 export const planetLocations = {
-  hoth: [-200, 0, 0],
-  yavin: [200, 0, 0],
+  hoth1: [-250, 250, 250],
+  hoth2: [-250, -250, -250],
+  hoth3: [250, 250, 250],
+  hoth4: [250, -250, -250],
+  yavin1: [-300, 0, 250],
+  yavin2: [0, -300, 250],
+  yavin3: [0, 300, -250],
+  yavin4: [300, 0, -250],
   earth: [0, 0, 0],
 };
 

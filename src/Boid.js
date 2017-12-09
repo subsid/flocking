@@ -2,17 +2,33 @@ import * as T from 'three';
 import { getRandInRange } from './random';
 import { planetLocations, XShip, OShip } from './ships';
 
+const hothHomes = [
+  new T.Vector3(...planetLocations.hoth1),
+  new T.Vector3(...planetLocations.hoth2),
+  new T.Vector3(...planetLocations.hoth3),
+  new T.Vector3(...planetLocations.hoth4),
+];
+
+const yavinHomes = [
+  new T.Vector3(...planetLocations.yavin1),
+  new T.Vector3(...planetLocations.yavin2),
+  new T.Vector3(...planetLocations.yavin3),
+  new T.Vector3(...planetLocations.yavin4),
+];
+
 export default function Boid(type, vMax, scene) {
   this.type = type;
 
   // Initial movement vectors
   this.position = (type) ?
     new T.Vector3(
-      getRandInRange(planetLocations.hoth[0] - 20, planetLocations.hoth[0] + 20),
-      getRandInRange(-10, 10), 0) :
+      getRandInRange(hothHomes[0].x - 20, hothHomes[0].x + 20),
+      getRandInRange(hothHomes[0].y - 20, hothHomes[0].y + 20),
+      getRandInRange(hothHomes[0].z - 20, hothHomes[0].z + 20)) :
     new T.Vector3(
-      getRandInRange(planetLocations.yavin[0] - 20, planetLocations.yavin[0] + 20),
-      getRandInRange(-10, 10), 0);
+      getRandInRange(yavinHomes[0].x - 20, yavinHomes[0].x + 20),
+      getRandInRange(yavinHomes[0].y - 20, yavinHomes[0].y + 20),
+      getRandInRange(yavinHomes[0].z - 20, yavinHomes[0].z + 20));
 
   this.velocity = new T.Vector3(
     getRandInRange(-1, vMax),
@@ -25,12 +41,19 @@ export default function Boid(type, vMax, scene) {
 
   // Type determines boid geometry, home location, and starting position
   this.obj = (type) ? new XShip() : new OShip();
-  this.home = (type) ?
-    new T.Vector3(...planetLocations.hoth) :
-    new T.Vector3(...planetLocations.yavin);
+  this.home = (type) ? hothHomes[1] : yavinHomes[1];
+  this.homeIndex = 0;
+  setInterval(this.updateHome.bind(this), 5000)
 
   scene.add(this.obj.mesh);
 }
+
+Boid.prototype.updateHome = function () {
+  this.homeIndex = (this.homeIndex + 1) % (this.type ? hothHomes.length : yavinHomes.length);
+  this.home = this.type ?
+    hothHomes[this.homeIndex]
+    : yavinHomes[this.homeIndex];
+};
 
 // Run an iteration of the flock
 Boid.prototype.step = function (flock, spheres) {

@@ -1,6 +1,8 @@
 import * as T from 'three';
+
 import Boid from './Boid';
-import {getRandInRange} from './random';
+import { getRandInRange } from './random';
+import { planetLocations } from '../src/ships';
 
 
 const windowWidth = window.innerWidth;
@@ -55,6 +57,19 @@ function setupAsteroidField(num, spheres, scene) {
   }
 }
 
+function setupPlanet(position, texturePath, spheres, scene) {
+  const geometry = new T.SphereGeometry(50, 30, 30);
+  const material = new T.MeshPhongMaterial({
+    map: T.ImageUtils.loadTexture(texturePath),
+  });
+
+  const mesh = new T.Mesh(geometry, material);
+  mesh.position.add(new T.Vector3(...position));
+
+  spheres.push(mesh);
+  scene.add(mesh);
+}
+
 function setupPlanets(spheres, scene) {
   const starFieldGeometry = new T.SphereGeometry(maxWidth, 32, 32);
   const starFieldMaterial = new T.MeshPhongMaterial({
@@ -66,38 +81,15 @@ function setupPlanets(spheres, scene) {
 
   scene.add(starFieldMesh);
 
-  const earthGeometry = new T.SphereGeometry(20, 30, 30);
-  const earthMaterial = new T.MeshPhongMaterial({
-    map: T.ImageUtils.loadTexture('./assets/images/earthmap1k.jpg'),
-    bumpMap: T.ImageUtils.loadTexture('./assets/images/earthbump1k.jpg'),
-    bumpScale: 1,
-  });
-  const earthMesh = new T.Mesh(earthGeometry, earthMaterial);
-  earthMesh.position.add(new T.Vector3(-50, 0, 0));
-  scene.add(earthMesh);
-  spheres.push(earthMesh);
-
-  const hothGeometry = new T.SphereGeometry(50, 30, 30);
-  const hothMaterial = new T.MeshPhongMaterial({
-    map: T.ImageUtils.loadTexture('./assets/images/hothmap1k.jpg'),
-  });
-
-  const hothMesh = new T.Mesh(hothGeometry, hothMaterial);
-  hothMesh.position.add(new T.Vector3(-200, 0, 0));
-  spheres.push(hothMesh);
-
-  scene.add(hothMesh);
-
-  const yavinGeometry = new T.SphereGeometry(50, 30, 30);
-  const yavinMaterial = new T.MeshPhongMaterial({
-    map: T.ImageUtils.loadTexture('./assets/images/yavinmap.jpg'),
-  });
-
-  const yavinMesh = new T.Mesh(yavinGeometry, yavinMaterial);
-  yavinMesh.position.add(new T.Vector3(200, 0, 0));
-  spheres.push(yavinMesh);
-
-  scene.add(yavinMesh);
+  setupPlanet(planetLocations.earth, './assets/images/earthmap1k.jpg', spheres, scene);
+  setupPlanet(planetLocations.hoth1, './assets/images/hothmap1k.jpg', spheres, scene);
+  setupPlanet(planetLocations.hoth2, './assets/images/hothmap1k.jpg', spheres, scene);
+  setupPlanet(planetLocations.hoth3, './assets/images/hothmap1k.jpg', spheres, scene);
+  setupPlanet(planetLocations.hoth4, './assets/images/hothmap1k.jpg', spheres, scene);
+  setupPlanet(planetLocations.yavin1, './assets/images/yavinmap.jpg', spheres, scene);
+  setupPlanet(planetLocations.yavin2, './assets/images/yavinmap.jpg', spheres, scene);
+  setupPlanet(planetLocations.yavin3, './assets/images/yavinmap.jpg', spheres, scene);
+  setupPlanet(planetLocations.yavin4, './assets/images/yavinmap.jpg', spheres, scene);
 }
 
 export default function init(controller) {
@@ -105,7 +97,7 @@ export default function init(controller) {
   const clock = new T.Clock();
   const scene = new T.Scene();
   const camera = new T.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
-  camera.position.set(0, 0, 450);
+  camera.position.set(200, 300, 800);
   camera.lookAt(scene.position);
 
   const boids = [];
