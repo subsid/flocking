@@ -3,6 +3,7 @@ import * as T from 'three';
 import Boid from './Boid';
 import { getRandInRange } from './random';
 import { planetLocations } from '../src/ships';
+import Explosion from './Explosion';
 
 
 const windowWidth = window.innerWidth;
@@ -23,15 +24,15 @@ function setupLights(scene) {
   scene.add(lightAmb, lightDir);
 }
 
-function setupFlock(numA, numB, vMax, boids, scene) {
+function setupFlock(xWingsNum, tieFightersNum, vMax, boids, scene) {
   // Popoulate X-Boid ships
   let i = 0;
-  while (i < numA) {
+  while (i < xWingsNum) {
     boids[i] = new Boid(1, vMax, scene);
     i += 1;
   }
 
-  while (i < numA + numB) {
+  while (i < xWingsNum + tieFightersNum) {
     boids[i] = new Boid(0, vMax, scene);
     i += 1;
   }
@@ -97,11 +98,12 @@ export default function init(controller) {
   const clock = new T.Clock();
   const scene = new T.Scene();
   const camera = new T.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
-  camera.position.set(200, 300, 800);
+  camera.position.set(0, 0, 1000);
   camera.lookAt(scene.position);
 
   const boids = [];
   const spheres = [];
+  const explosions = [];
 
   setupLights(scene);
   setupFlock(controller.xWings, controller.tieFighters, controller.vMax, boids, scene);
@@ -113,6 +115,7 @@ export default function init(controller) {
     boids,
     spheres,
     scene,
+    explosions,
     camera,
     clock,
     dim: {
