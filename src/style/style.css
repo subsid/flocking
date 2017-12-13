@@ -8,3 +8,25 @@ body {
   margin: 0px;
   overflow: hidden;
 }
+
+.score-board {
+  position: fixed;
+  top: 1em;
+  left: 1em;
+}
+
+.score-board .xwings-left {
+  color: #CCCCAA;
+}
+
+.score-board .xwings-left h2{
+  display: inline
+}
+
+.score-board .tiefighters-left {
+  color: #5ab3fc;
+}
+
+.score-board .tiefighters-left h2{
+  display: inline;
+}

@@ -60,8 +60,8 @@ function main() {
   document.body.appendChild(component());
   const gui = new window.dat.GUI();
   const controller = {
-    xWings: 10,
-    tieFighters: 10,
+    xWings: 50,
+    tieFighters: 50,
     vMax: 1,
     perspectiveCamera: false,
     setInitial: false,

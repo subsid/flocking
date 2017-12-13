@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -44317,14 +44317,222 @@ function getRandInRange(min, max) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (immutable) */ __webpack_exports__["b"] = XShip;
+/* harmony export (immutable) */ __webpack_exports__["a"] = OShip;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_three__ = __webpack_require__(0);
+// Ship designs and some flocking behavior was
+// taken from https://codepen.io/coaster/pen/QpqVjP
+
+
+
+// Planet locations
+const planetLocations = {
+  hoth1: [-250, 250, 250],
+  yavin1: [-300, 0, 250],
+  // hoth1: [0, 0, 0],
+  hoth2: [-250, -250, -250],
+  hoth3: [250, 250, 250],
+  hoth4: [250, -250, -250],
+  // yavin1: [100, 0, 0],
+  yavin2: [0, -300, 250],
+  yavin3: [0, 300, -250],
+  yavin4: [300, 0, -250],
+  earth: [0, 0, 0],
+};
+/* harmony export (immutable) */ __webpack_exports__["c"] = planetLocations;
+
+
+// Color list
+const col = {
+  red: 0xCC2200,
+  black: 0x222222,
+  grey: 0x111133,
+  white: 0xCCCCAA,
+  green: 0x00FF00,
+  void: 0x111111,
+  tie: 678591,
+};
+/* unused harmony export col */
+
+
+// Geometry types
+const geom = {
+  box: new __WEBPACK_IMPORTED_MODULE_0_three__["BoxGeometry"](1, 1, 1),
+  ico: new __WEBPACK_IMPORTED_MODULE_0_three__["IcosahedronGeometry"](1, 0),
+  tri: new __WEBPACK_IMPORTED_MODULE_0_three__["CylinderGeometry"](1, 1, 1, 3),
+  taper: new __WEBPACK_IMPORTED_MODULE_0_three__["CylinderGeometry"](0.5, 1, 1, 4),
+};
+
+// Materials
+const mat = {
+  x_hull: new __WEBPACK_IMPORTED_MODULE_0_three__["MeshStandardMaterial"]({ color: col.white }),
+  o_hull: new __WEBPACK_IMPORTED_MODULE_0_three__["MeshStandardMaterial"]({ color: col.tie, shading: __WEBPACK_IMPORTED_MODULE_0_three__["FlatShading"] }),
+  x_dec: new __WEBPACK_IMPORTED_MODULE_0_three__["MeshStandardMaterial"]({ color: col.red }),
+  o_dec: new __WEBPACK_IMPORTED_MODULE_0_three__["MeshStandardMaterial"]({ color: col.grey }),
+  x_pit: new __WEBPACK_IMPORTED_MODULE_0_three__["MeshStandardMaterial"]({ color: col.black }),
+  o_pit: new __WEBPACK_IMPORTED_MODULE_0_three__["MeshStandardMaterial"]({ color: col.green }),
+};
+
+function XShip() {
+  const nose = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.taper, mat.x_hull);
+  nose.position.set(0, 0, 2);
+  nose.scale.set(2, 3, 7);
+  const beacon = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.taper, mat.x_dec);
+  beacon.position.set(0, 0.5, 1);
+  beacon.scale.set(2, 3, 6);
+  const pit = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.taper, mat.x_pit);
+  pit.position.set(0, 0, 3);
+  pit.scale.set(2, 2, 7);
+  const hull = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.box, mat.x_hull);
+  hull.scale.set(4, 3, 10);
+  hull.position.set(0, 0, -3);
+  const dorsal = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.tri, mat.x_hull);
+  dorsal.position.set(0, 0, -5);
+  dorsal.rotateX(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(90));
+  dorsal.rotateY(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(90));
+  dorsal.rotateX(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(-90));
+  dorsal.scale.set(6, 1, 8);
+  const finUl = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.box, mat.x_hull);
+  finUl.position.set(0, 0, -4);
+  finUl.rotateZ(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(30));
+  finUl.scale.set(20, 0.5, 3);
+  const finUr = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.box, mat.x_hull);
+  finUr.position.set(0, 0, -4);
+  finUr.rotateZ(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(-30));
+  finUr.scale.set(20, 0.5, 3);
+
+  const xShip = new __WEBPACK_IMPORTED_MODULE_0_three__["Group"]();
+  xShip.add(nose, beacon, pit, hull, dorsal, finUl, finUr);
+  xShip.castShadow = true;
+  this.mesh = xShip;
+  // scene.add(x_ship);
+  // x_ship.position.set(-20,0,0);
+}
+
+function OShip() {
+  const nose = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.ico, mat.o_hull);
+  nose.scale.set(5, 5, 5);
+  const hull = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.taper, mat.o_hull);
+  hull.position.set(0, 0, 1);
+  hull.rotateX(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(90));
+  hull.rotateY(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(45));
+  hull.scale.set(5, 8, 5);
+  const pit = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.taper, mat.o_pit);
+  pit.position.set(0, 0, 4);
+  pit.rotateX(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(90));
+  pit.scale.set(3.5, 2.5, 2.5);
+  const wingL = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.tri, mat.o_dec);
+  wingL.position.set(4, -2, -1);
+  wingL.rotateX(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(90));
+  wingL.rotateZ(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(-30));
+  wingL.scale.set(6, 1, 3);
+  const wingR = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.tri, mat.o_dec);
+  wingR.position.set(-4, -2, -1);
+  wingR.rotateX(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(90));
+  wingR.rotateZ(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(30));
+  wingR.scale.set(6, 1, 3);
+
+  const finL = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.tri, mat.o_dec);
+  finL.position.set(4, 3, -2);
+  finL.rotateZ(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(60));
+  finL.rotateY(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(30));
+  finL.scale.set(6, 1, 3);
+  const finR = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.tri, mat.o_dec);
+  finR.position.set(-4, 3, -2);
+  finR.rotateZ(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(-60));
+  finR.rotateY(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(-30));
+  finR.scale.set(6, 1, 3);
+
+  const Oship = new __WEBPACK_IMPORTED_MODULE_0_three__["Group"]();
+  Oship.add(nose, hull, pit, wingL, finL, finR, wingR);
+  Oship.castShadow = true;
+  this.mesh = Oship;
+  // scene.add(o_ship);
+  // o_ship.position.set(20,0,0);
+}
+
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = ExplodeAnimation;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_three__ = __webpack_require__(0);
+
+
+const movementSpeed = 10;
+const totalObjects = 100;
+const objectSize = 4;
+const dirs = [];
+const xwingColors = 0xFFFFFF;
+const tieFigherColors = 0x5ab3fc;
+
+function ExplodeAnimation(position, type, scene) {
+  const geometry = new __WEBPACK_IMPORTED_MODULE_0_three__["Geometry"]();
+  this.clock = new __WEBPACK_IMPORTED_MODULE_0_three__["Clock"]();
+  this.scene = scene;
+
+  for (let i = 0; i < totalObjects; i++) {
+    const vertex = (new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"]()).fromArray(position);
+
+    geometry.vertices.push(vertex);
+    dirs.push(
+      {
+        x: (Math.random() * movementSpeed) - (movementSpeed / 2),
+        y: (Math.random() * movementSpeed) - (movementSpeed / 2),
+        z: (Math.random() * movementSpeed) - (movementSpeed / 2),
+      });
+  }
+  const material = new __WEBPACK_IMPORTED_MODULE_0_three__["PointsMaterial"]({
+    size: objectSize,
+    color: type ? xwingColors : tieFigherColors,
+  });
+  const particles = new __WEBPACK_IMPORTED_MODULE_0_three__["Points"](geometry, material);
+
+  this.object = particles;
+  this.alive = true;
+
+  this.xDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
+  this.yDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
+  this.zDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
+
+  scene.add(this.object);
+}
+
+ExplodeAnimation.prototype.update = function () {
+  if (this.clock.getElapsedTime() < 4) {
+    let pCount = totalObjects;
+
+    while (pCount) {
+      pCount -= 1;
+      const particle = this.object.geometry.vertices[pCount];
+      particle.y += dirs[pCount].y;
+      particle.x += dirs[pCount].x;
+      particle.z += dirs[pCount].z;
+    }
+    this.object.geometry.verticesNeedUpdate = true;
+  } else {
+    this.alive = false;
+    this.scene.remove(this.object);
+  }
+};
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_three__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_three_orbitcontrols__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_three_orbitcontrols__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_three_orbitcontrols___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_three_orbitcontrols__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__style_style_css__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__style_style_css__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__style_style_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__style_style_css__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__init__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__animate__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__init__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__animate__ = __webpack_require__(14);
 
 
 
@@ -44387,10 +44595,11 @@ function main() {
   document.body.appendChild(component());
   const gui = new window.dat.GUI();
   const controller = {
-    asteroids: 25,
-    xWings: 10,
-    tieFighters: 5,
+    xWings: 50,
+    tieFighters: 50,
     vMax: 1,
+    perspectiveCamera: false,
+    setInitial: false,
   };
 
   const obj = {
@@ -44402,9 +44611,10 @@ function main() {
   obj.start();
 
   gui.add(obj, 'start');
-  gui.add(controller, 'asteroids', 0, 50).step(1);
-  gui.add(controller, 'xWings', 0, 30).step(1);
-  gui.add(controller, 'tieFighters', 0, 10).step(1);
+  gui.add(controller, 'perspectiveCamera');
+  gui.add(controller, 'setInitial');
+  gui.add(controller, 'xWings', 0, 100).step(1);
+  gui.add(controller, 'tieFighters', 0, 100).step(1);
   gui.add(controller, 'vMax', 1, 100).step(1);
   gui.close();
 }
@@ -44413,7 +44623,7 @@ main();
 
 
 /***/ }),
-/* 3 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var THREE = __webpack_require__(0)
@@ -45465,13 +45675,13 @@ module.exports = OrbitControls
 
 
 /***/ }),
-/* 4 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(5);
+var content = __webpack_require__(7);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -45479,7 +45689,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(7)(content, options);
+var update = __webpack_require__(9)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -45496,21 +45706,21 @@ if(false) {
 }
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(6)(undefined);
+exports = module.exports = __webpack_require__(8)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, ".render {\n  background-color: 'blue'\n}\n\nbody {\n  font-family: Monospace;\n  background-color: #f0f0f0;\n  margin: 0px;\n  overflow: hidden;\n}\n", ""]);
+exports.push([module.i, ".render {\n  background-color: 'blue'\n}\n\nbody {\n  font-family: Monospace;\n  background-color: #f0f0f0;\n  margin: 0px;\n  overflow: hidden;\n}\n\n.score-board {\n  position: fixed;\n  top: 1em;\n  left: 1em;\n}\n\n.score-board .xwings-left {\n  color: #CCCCAA;\n}\n\n.score-board .xwings-left h2{\n  display: inline\n}\n\n.score-board .tiefighters-left {\n  color: #5ab3fc;\n}\n\n.score-board .tiefighters-left h2{\n  display: inline;\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports) {
 
 /*
@@ -45592,7 +45802,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -45638,7 +45848,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(8);
+var	fixUrls = __webpack_require__(10);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -45951,7 +46161,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports) {
 
 
@@ -46046,14 +46256,19 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = init;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_three__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Boid__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Boid__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__random__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__src_ships__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Explosion__ = __webpack_require__(3);
+
+
+
 
 
 
@@ -46077,15 +46292,15 @@ function setupLights(scene) {
   scene.add(lightAmb, lightDir);
 }
 
-function setupFlock(numA, numB, vMax, boids, scene) {
+function setupFlock(xWingsNum, tieFightersNum, vMax, boids, scene) {
   // Popoulate X-Boid ships
   let i = 0;
-  while (i < numA) {
+  while (i < xWingsNum) {
     boids[i] = new __WEBPACK_IMPORTED_MODULE_1__Boid__["a" /* default */](1, vMax, scene);
     i += 1;
   }
 
-  while (i < numA + numB) {
+  while (i < xWingsNum + tieFightersNum) {
     boids[i] = new __WEBPACK_IMPORTED_MODULE_1__Boid__["a" /* default */](0, vMax, scene);
     i += 1;
   }
@@ -46111,6 +46326,19 @@ function setupAsteroidField(num, spheres, scene) {
   }
 }
 
+function setupPlanet(position, texturePath, spheres, scene) {
+  const geometry = new __WEBPACK_IMPORTED_MODULE_0_three__["SphereGeometry"](50, 30, 30);
+  const material = new __WEBPACK_IMPORTED_MODULE_0_three__["MeshPhongMaterial"]({
+    map: __WEBPACK_IMPORTED_MODULE_0_three__["ImageUtils"].loadTexture(texturePath),
+  });
+
+  const mesh = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geometry, material);
+  mesh.position.add(new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](...position));
+
+  spheres.push(mesh);
+  scene.add(mesh);
+}
+
 function setupPlanets(spheres, scene) {
   const starFieldGeometry = new __WEBPACK_IMPORTED_MODULE_0_three__["SphereGeometry"](maxWidth, 32, 32);
   const starFieldMaterial = new __WEBPACK_IMPORTED_MODULE_0_three__["MeshPhongMaterial"]({
@@ -46122,38 +46350,15 @@ function setupPlanets(spheres, scene) {
 
   scene.add(starFieldMesh);
 
-  const earthGeometry = new __WEBPACK_IMPORTED_MODULE_0_three__["SphereGeometry"](20, 30, 30);
-  const earthMaterial = new __WEBPACK_IMPORTED_MODULE_0_three__["MeshPhongMaterial"]({
-    map: __WEBPACK_IMPORTED_MODULE_0_three__["ImageUtils"].loadTexture('./assets/images/earthmap1k.jpg'),
-    bumpMap: __WEBPACK_IMPORTED_MODULE_0_three__["ImageUtils"].loadTexture('./assets/images/earthbump1k.jpg'),
-    bumpScale: 1,
-  });
-  const earthMesh = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](earthGeometry, earthMaterial);
-  earthMesh.position.add(new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](-50, 0, 0));
-  scene.add(earthMesh);
-  spheres.push(earthMesh);
-
-  const hothGeometry = new __WEBPACK_IMPORTED_MODULE_0_three__["SphereGeometry"](50, 30, 30);
-  const hothMaterial = new __WEBPACK_IMPORTED_MODULE_0_three__["MeshPhongMaterial"]({
-    map: __WEBPACK_IMPORTED_MODULE_0_three__["ImageUtils"].loadTexture('./assets/images/hothmap1k.jpg'),
-  });
-
-  const hothMesh = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](hothGeometry, hothMaterial);
-  hothMesh.position.add(new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](-200, 0, 0));
-  spheres.push(hothMesh);
-
-  scene.add(hothMesh);
-
-  const yavinGeometry = new __WEBPACK_IMPORTED_MODULE_0_three__["SphereGeometry"](50, 30, 30);
-  const yavinMaterial = new __WEBPACK_IMPORTED_MODULE_0_three__["MeshPhongMaterial"]({
-    map: __WEBPACK_IMPORTED_MODULE_0_three__["ImageUtils"].loadTexture('./assets/images/yavinmap.jpg'),
-  });
-
-  const yavinMesh = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](yavinGeometry, yavinMaterial);
-  yavinMesh.position.add(new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](200, 0, 0));
-  spheres.push(yavinMesh);
-
-  scene.add(yavinMesh);
+  setupPlanet(__WEBPACK_IMPORTED_MODULE_3__src_ships__["c" /* planetLocations */].earth, './assets/images/earthmap1k.jpg', spheres, scene);
+  setupPlanet(__WEBPACK_IMPORTED_MODULE_3__src_ships__["c" /* planetLocations */].hoth1, './assets/images/hothmap1k.jpg', spheres, scene);
+  setupPlanet(__WEBPACK_IMPORTED_MODULE_3__src_ships__["c" /* planetLocations */].hoth2, './assets/images/hothmap1k.jpg', spheres, scene);
+  setupPlanet(__WEBPACK_IMPORTED_MODULE_3__src_ships__["c" /* planetLocations */].hoth3, './assets/images/hothmap1k.jpg', spheres, scene);
+  setupPlanet(__WEBPACK_IMPORTED_MODULE_3__src_ships__["c" /* planetLocations */].hoth4, './assets/images/hothmap1k.jpg', spheres, scene);
+  setupPlanet(__WEBPACK_IMPORTED_MODULE_3__src_ships__["c" /* planetLocations */].yavin1, './assets/images/yavinmap.jpg', spheres, scene);
+  setupPlanet(__WEBPACK_IMPORTED_MODULE_3__src_ships__["c" /* planetLocations */].yavin2, './assets/images/yavinmap.jpg', spheres, scene);
+  setupPlanet(__WEBPACK_IMPORTED_MODULE_3__src_ships__["c" /* planetLocations */].yavin3, './assets/images/yavinmap.jpg', spheres, scene);
+  setupPlanet(__WEBPACK_IMPORTED_MODULE_3__src_ships__["c" /* planetLocations */].yavin4, './assets/images/yavinmap.jpg', spheres, scene);
 }
 
 function init(controller) {
@@ -46161,11 +46366,12 @@ function init(controller) {
   const clock = new __WEBPACK_IMPORTED_MODULE_0_three__["Clock"]();
   const scene = new __WEBPACK_IMPORTED_MODULE_0_three__["Scene"]();
   const camera = new __WEBPACK_IMPORTED_MODULE_0_three__["PerspectiveCamera"](50, window.innerWidth / window.innerHeight, 1, 10000);
-  camera.position.set(0, 0, 450);
+  camera.position.set(0, 0, 1000);
   camera.lookAt(scene.position);
 
   const boids = [];
   const spheres = [];
+  const explosions = [];
 
   setupLights(scene);
   setupFlock(controller.xWings, controller.tieFighters, controller.vMax, boids, scene);
@@ -46177,6 +46383,8 @@ function init(controller) {
     boids,
     spheres,
     scene,
+    controller,
+    explosions,
     camera,
     clock,
     dim: {
@@ -46192,29 +46400,55 @@ function init(controller) {
 
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = Boid;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_three__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__random__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ships__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ships__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Bullet__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Explosion__ = __webpack_require__(3);
 
 
 
+
+
+
+const hothHomes = [
+  new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](...__WEBPACK_IMPORTED_MODULE_2__ships__["c" /* planetLocations */].hoth1),
+  new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](...__WEBPACK_IMPORTED_MODULE_2__ships__["c" /* planetLocations */].hoth2),
+  new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](...__WEBPACK_IMPORTED_MODULE_2__ships__["c" /* planetLocations */].hoth3),
+  new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](...__WEBPACK_IMPORTED_MODULE_2__ships__["c" /* planetLocations */].hoth4),
+];
+
+const yavinHomes = [
+  new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](...__WEBPACK_IMPORTED_MODULE_2__ships__["c" /* planetLocations */].yavin1),
+  new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](...__WEBPACK_IMPORTED_MODULE_2__ships__["c" /* planetLocations */].yavin2),
+  new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](...__WEBPACK_IMPORTED_MODULE_2__ships__["c" /* planetLocations */].yavin3),
+  new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](...__WEBPACK_IMPORTED_MODULE_2__ships__["c" /* planetLocations */].yavin4),
+];
+
+const tempVector = new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"]();
 
 function Boid(type, vMax, scene) {
   this.type = type;
+  this.clock = new __WEBPACK_IMPORTED_MODULE_0_three__["Clock"]();
+  this.bullet = null;
+  this.lastBulletEmit = 0;
+  this.alive = true;
 
   // Initial movement vectors
   this.position = (type) ?
     new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](
-      Object(__WEBPACK_IMPORTED_MODULE_1__random__["a" /* getRandInRange */])(__WEBPACK_IMPORTED_MODULE_2__ships__["c" /* planetLocations */].hoth[0] - 20, __WEBPACK_IMPORTED_MODULE_2__ships__["c" /* planetLocations */].hoth[0] + 20),
-      Object(__WEBPACK_IMPORTED_MODULE_1__random__["a" /* getRandInRange */])(-10, 10), 0) :
+      Object(__WEBPACK_IMPORTED_MODULE_1__random__["a" /* getRandInRange */])(hothHomes[0].x - 20, hothHomes[0].x + 20),
+      Object(__WEBPACK_IMPORTED_MODULE_1__random__["a" /* getRandInRange */])(hothHomes[0].y - 20, hothHomes[0].y + 20),
+      Object(__WEBPACK_IMPORTED_MODULE_1__random__["a" /* getRandInRange */])(hothHomes[0].z - 20, hothHomes[0].z + 20)) :
     new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](
-      Object(__WEBPACK_IMPORTED_MODULE_1__random__["a" /* getRandInRange */])(__WEBPACK_IMPORTED_MODULE_2__ships__["c" /* planetLocations */].yavin[0] - 20, __WEBPACK_IMPORTED_MODULE_2__ships__["c" /* planetLocations */].yavin[0] + 20),
-      Object(__WEBPACK_IMPORTED_MODULE_1__random__["a" /* getRandInRange */])(-10, 10), 0);
+      Object(__WEBPACK_IMPORTED_MODULE_1__random__["a" /* getRandInRange */])(yavinHomes[0].x - 20, yavinHomes[0].x + 20),
+      Object(__WEBPACK_IMPORTED_MODULE_1__random__["a" /* getRandInRange */])(yavinHomes[0].y - 20, yavinHomes[0].y + 20),
+      Object(__WEBPACK_IMPORTED_MODULE_1__random__["a" /* getRandInRange */])(yavinHomes[0].z - 20, yavinHomes[0].z + 20));
 
   this.velocity = new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](
     Object(__WEBPACK_IMPORTED_MODULE_1__random__["a" /* getRandInRange */])(-1, vMax),
@@ -46227,18 +46461,92 @@ function Boid(type, vMax, scene) {
 
   // Type determines boid geometry, home location, and starting position
   this.obj = (type) ? new __WEBPACK_IMPORTED_MODULE_2__ships__["b" /* XShip */]() : new __WEBPACK_IMPORTED_MODULE_2__ships__["a" /* OShip */]();
-  this.home = (type) ?
-    new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](...__WEBPACK_IMPORTED_MODULE_2__ships__["c" /* planetLocations */].hoth) :
-    new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](...__WEBPACK_IMPORTED_MODULE_2__ships__["c" /* planetLocations */].yavin);
+  this.home = (type) ? hothHomes[1] : new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](0, 0, 0);
+  this.homeIndex = 0;
+  setInterval(this.updateHome.bind(this), 10000);
 
   scene.add(this.obj.mesh);
 }
 
+Boid.prototype.shootBullets = function (flock, scene) {
+  const neighborRange = 200;
+  let currBoid;
+  const currentT = this.clock.getElapsedTime();
+  if ((currentT - this.lastBulletEmit) > 6) {
+    for (let i = 0; i < flock.length; i++) {
+      // Only xwings can shoot
+      currBoid = flock[i];
+      if (currBoid.alive && (currBoid.type !== this.type)) {
+        const dist = this.position.distanceTo(currBoid.position);
+        if (dist < neighborRange) {
+          tempVector.subVectors(
+            currBoid.position.clone().add(currBoid.velocity),
+            this.position).add(currBoid.velocity);
+          this.bullet = new __WEBPACK_IMPORTED_MODULE_3__Bullet__["a" /* default */](
+            this.position.toArray(),
+            tempVector.toArray(),
+            currBoid.type,
+            scene);
+          this.lastBulletEmit = currentT;
+          return;
+        }
+      }
+    }
+  }
+};
+
+Boid.prototype.updateBullets = function () {
+  if (this.bullet) {
+    if (this.bullet.alive) {
+      this.bullet.step();
+    } else {
+      this.bullet.material.visible = false;
+    }
+  }
+};
+
+Boid.prototype.updateHome = function () {
+  // this.homeIndex = (this.homeIndex + 1) % (this.type ? hothHomes.length : yavinHomes.length);
+  this.homeIndex = this.type ?
+    Math.floor(Object(__WEBPACK_IMPORTED_MODULE_1__random__["a" /* getRandInRange */])(0, hothHomes.length)) :
+    Math.floor(Object(__WEBPACK_IMPORTED_MODULE_1__random__["a" /* getRandInRange */])(0, yavinHomes.length));
+  this.home = this.type ?
+    hothHomes[this.homeIndex]
+    : yavinHomes[this.homeIndex];
+};
+
+Boid.prototype.updateAliveStatus = function (flock, explosions, scene) {
+  const explosionDistance = 10;
+  let currBoid;
+  for (let i = 0; i < flock.length; i++) {
+    currBoid = flock[i];
+    if (currBoid.bullet && currBoid.bullet.alive && (currBoid.type !== this.type)) {
+      if (currBoid.bullet.position.distanceTo(this.position) < explosionDistance) {
+        explosions.push(new __WEBPACK_IMPORTED_MODULE_4__Explosion__["a" /* default */](this.position.toArray(), this.type, scene));
+        this.alive = false;
+        currBoid.bullet.alive = false;
+        this.obj.mesh.traverse((obj) => {
+          obj.visible = false;
+        });
+        currBoid.bullet.alive = false;
+        return;
+      }
+    }
+  }
+};
+
 // Run an iteration of the flock
-Boid.prototype.step = function (flock, spheres) {
-  this.accumulate(flock, spheres);
-  this.update();
-  this.obj.mesh.position.set(this.position.x, this.position.y, this.position.z);
+Boid.prototype.step = function (flock, spheres, explosions, scene) {
+  if (this.alive) {
+    this.accumulate(flock, spheres);
+    // if (!this.type) {
+    this.update();
+    // }
+    this.shootBullets(flock, scene);
+    this.updateAliveStatus(flock, explosions, scene);
+    this.obj.mesh.position.set(this.position.x, this.position.y, this.position.z);
+  }
+  this.updateBullets(scene);
 };
 
 // Apply Forces
@@ -46408,156 +46716,105 @@ Boid.prototype.steer = function (target) {
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (immutable) */ __webpack_exports__["b"] = XShip;
-/* harmony export (immutable) */ __webpack_exports__["a"] = OShip;
+/* harmony export (immutable) */ __webpack_exports__["a"] = Bullet;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_three__ = __webpack_require__(0);
-// Ship designs and some flocking behavior was
-// taken from https://codepen.io/coaster/pen/QpqVjP
 
 
+function Bullet(position, velocity, targetType, scene) {
+  this.position = new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](...position);
+  this.velocity = new __WEBPACK_IMPORTED_MODULE_0_three__["Vector3"](...velocity);
+  this.velocity.normalize().multiplyScalar(20);
+  this.targetType = targetType;
 
-// Planet locations
-const planetLocations = {
-  hoth: [-200, 0, 0],
-  yavin: [200, 0, 0],
-  earth: [0, 0, 0],
-};
-/* harmony export (immutable) */ __webpack_exports__["c"] = planetLocations;
+  this.age = 0;
+  this.deathAge = 5;
+  this.alive = true;
+  this.clock = new __WEBPACK_IMPORTED_MODULE_0_three__["Clock"]();
 
+  const material = new __WEBPACK_IMPORTED_MODULE_0_three__["MeshPhongMaterial"]();
+  const geometry = new __WEBPACK_IMPORTED_MODULE_0_three__["SphereGeometry"](3);
 
-// Color list
-const col = {
-  red: 0xCC2200,
-  black: 0x222222,
-  grey: 0x111133,
-  white: 0xCCCCAA,
-  green: 0x00FF00,
-  void: 0x111111,
-  tie: 678591,
-};
-/* unused harmony export col */
-
-
-// Geometry types
-const geom = {
-  box: new __WEBPACK_IMPORTED_MODULE_0_three__["BoxGeometry"](1, 1, 1),
-  ico: new __WEBPACK_IMPORTED_MODULE_0_three__["IcosahedronGeometry"](1, 0),
-  tri: new __WEBPACK_IMPORTED_MODULE_0_three__["CylinderGeometry"](1, 1, 1, 3),
-  taper: new __WEBPACK_IMPORTED_MODULE_0_three__["CylinderGeometry"](0.5, 1, 1, 4),
-};
-
-// Materials
-const mat = {
-  x_hull: new __WEBPACK_IMPORTED_MODULE_0_three__["MeshStandardMaterial"]({ color: col.white }),
-  o_hull: new __WEBPACK_IMPORTED_MODULE_0_three__["MeshStandardMaterial"]({ color: col.tie, shading: __WEBPACK_IMPORTED_MODULE_0_three__["FlatShading"] }),
-  x_dec: new __WEBPACK_IMPORTED_MODULE_0_three__["MeshStandardMaterial"]({ color: col.red }),
-  o_dec: new __WEBPACK_IMPORTED_MODULE_0_three__["MeshStandardMaterial"]({ color: col.grey }),
-  x_pit: new __WEBPACK_IMPORTED_MODULE_0_three__["MeshStandardMaterial"]({ color: col.black }),
-  o_pit: new __WEBPACK_IMPORTED_MODULE_0_three__["MeshStandardMaterial"]({ color: col.green }),
-};
-
-function XShip() {
-  const nose = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.taper, mat.x_hull);
-  nose.position.set(0, 0, 2);
-  nose.scale.set(2, 3, 7);
-  const beacon = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.taper, mat.x_dec);
-  beacon.position.set(0, 0.5, 1);
-  beacon.scale.set(2, 3, 6);
-  const pit = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.taper, mat.x_pit);
-  pit.position.set(0, 0, 3);
-  pit.scale.set(2, 2, 7);
-  const hull = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.box, mat.x_hull);
-  hull.scale.set(4, 3, 10);
-  hull.position.set(0, 0, -3);
-  const dorsal = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.tri, mat.x_hull);
-  dorsal.position.set(0, 0, -5);
-  dorsal.rotateX(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(90));
-  dorsal.rotateY(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(90));
-  dorsal.rotateX(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(-90));
-  dorsal.scale.set(6, 1, 8);
-  const finUl = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.box, mat.x_hull);
-  finUl.position.set(0, 0, -4);
-  finUl.rotateZ(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(30));
-  finUl.scale.set(20, 0.5, 3);
-  const finUr = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.box, mat.x_hull);
-  finUr.position.set(0, 0, -4);
-  finUr.rotateZ(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(-30));
-  finUr.scale.set(20, 0.5, 3);
-
-  const xShip = new __WEBPACK_IMPORTED_MODULE_0_three__["Group"]();
-  xShip.add(nose, beacon, pit, hull, dorsal, finUl, finUr);
-  xShip.castShadow = true;
-  this.mesh = xShip;
-  // scene.add(x_ship);
-  // x_ship.position.set(-20,0,0);
+  const mesh = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geometry, material);
+  this.material = material;
+  this.geometry = geometry;
+  this.obj = mesh;
+  this.obj.position.set(this.position.x, this.position.y, this.position.z);
+  scene.add(mesh);
 }
 
-function OShip() {
-  const nose = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.ico, mat.o_hull);
-  nose.scale.set(5, 5, 5);
-  const hull = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.taper, mat.o_hull);
-  hull.position.set(0, 0, 1);
-  hull.rotateX(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(90));
-  hull.rotateY(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(45));
-  hull.scale.set(5, 8, 5);
-  const pit = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.taper, mat.o_pit);
-  pit.position.set(0, 0, 4);
-  pit.rotateX(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(90));
-  pit.scale.set(3.5, 2.5, 2.5);
-  const wingL = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.tri, mat.o_dec);
-  wingL.position.set(4, -2, -1);
-  wingL.rotateX(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(90));
-  wingL.rotateZ(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(-30));
-  wingL.scale.set(6, 1, 3);
-  const wingR = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.tri, mat.o_dec);
-  wingR.position.set(-4, -2, -1);
-  wingR.rotateX(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(90));
-  wingR.rotateZ(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(30));
-  wingR.scale.set(6, 1, 3);
+Bullet.prototype.step = function () {
+  this.age += this.clock.getDelta();
+  if (this.age > this.deathAge) {
+    this.alive = false;
+    return;
+  }
+  this.update();
+  this.obj.position.set(this.position.x, this.position.y, this.position.z);
+};
 
-  const finL = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.tri, mat.o_dec);
-  finL.position.set(4, 3, -2);
-  finL.rotateZ(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(60));
-  finL.rotateY(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(30));
-  finL.scale.set(6, 1, 3);
-  const finR = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](geom.tri, mat.o_dec);
-  finR.position.set(-4, 3, -2);
-  finR.rotateZ(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(-60));
-  finR.rotateY(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(-30));
-  finR.scale.set(6, 1, 3);
-
-  const Oship = new __WEBPACK_IMPORTED_MODULE_0_three__["Group"]();
-  Oship.add(nose, hull, pit, wingL, finL, finR, wingR);
-  Oship.castShadow = true;
-  this.mesh = Oship;
-  // scene.add(o_ship);
-  // o_ship.position.set(20,0,0);
-}
+Bullet.prototype.update = function () {
+  this.position.add(this.velocity);
+};
 
 
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = animate;
+let num = {
+  0: 0,
+  1: 0,
+};
+
+let xWings = document.querySelector(".xwings-left .score");
+let tieFighters = document.querySelector(".tiefighters-left .score");
+let cameraBoidIndex = 0;
 function animate(state, render) {
+  num[0] = 0;
+  num[1] = 0;
   if (window.animate) {
     window.animationId = window.requestAnimationFrame(animate.bind(null, state, render));
 
-    const { boids, spheres } = state;
+    const { controller, explosions, boids, spheres, scene, camera } = state;
 
     // Run iteration for each flock
     for (let i = 0; i < boids.length; i++) {
-      boids[i].step(boids, spheres);
+      boids[i].step(boids, spheres, explosions, scene);
+      if (boids[i].alive) {
+        num[boids[i].type] += 1;
+      }
+
+      if (boids[i].type && boids[i].alive) {
+        cameraBoidIndex = i;
+      }
+    }
+
+    for (let i = 0; i < explosions.length; i++) {
+      if (explosions[i].alive) {
+        explosions[i].update();
+      }
+    }
+
+    if (controller.perspectiveCamera) {
+      camera.position.fromArray(boids[cameraBoidIndex].position.toArray());
+      camera.lookAt(boids[cameraBoidIndex].velocity);
+    }
+
+    if (controller.setInitial) {
+      camera.position.set(0, 0, 1000);
+      camera.lookAt(scene.position);
     }
     render();
   }
+  xWings.innerHTML = num[1];
+  tieFighters.innerHTML = num[0];
 }
 
 
