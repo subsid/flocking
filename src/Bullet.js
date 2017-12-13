@@ -1,9 +1,10 @@
 import * as T from 'three';
 
-export default function Bullet(position, velocity, scene) {
+export default function Bullet(position, velocity, targetType, scene) {
   this.position = new T.Vector3(...position);
   this.velocity = new T.Vector3(...velocity);
   this.velocity.normalize().multiplyScalar(20);
+  this.targetType = targetType;
 
   this.age = 0;
   this.deathAge = 5;

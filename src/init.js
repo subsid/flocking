@@ -115,6 +115,7 @@ export default function init(controller) {
     boids,
     spheres,
     scene,
+    controller,
     explosions,
     camera,
     clock,

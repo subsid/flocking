@@ -60,10 +60,11 @@ function main() {
   document.body.appendChild(component());
   const gui = new window.dat.GUI();
   const controller = {
-    asteroids: 0,
     xWings: 10,
     tieFighters: 10,
     vMax: 1,
+    perspectiveCamera: false,
+    setInitial: false,
   };
 
   const obj = {
@@ -75,9 +76,10 @@ function main() {
   obj.start();
 
   gui.add(obj, 'start');
-  gui.add(controller, 'asteroids', 0, 50).step(1);
-  gui.add(controller, 'xWings', 0, 30).step(1);
-  gui.add(controller, 'tieFighters', 0, 10).step(1);
+  gui.add(controller, 'perspectiveCamera');
+  gui.add(controller, 'setInitial');
+  gui.add(controller, 'xWings', 0, 100).step(1);
+  gui.add(controller, 'tieFighters', 0, 100).step(1);
   gui.add(controller, 'vMax', 1, 100).step(1);
   gui.close();
 }

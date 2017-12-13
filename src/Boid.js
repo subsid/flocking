@@ -51,7 +51,7 @@ export default function Boid(type, vMax, scene) {
   this.obj = (type) ? new XShip() : new OShip();
   this.home = (type) ? hothHomes[1] : new T.Vector3(0, 0, 0);
   this.homeIndex = 0;
-  setInterval(this.updateHome.bind(this), 5000);
+  setInterval(this.updateHome.bind(this), 10000);
 
   scene.add(this.obj.mesh);
 }
@@ -64,11 +64,17 @@ Boid.prototype.shootBullets = function (flock, scene) {
     for (let i = 0; i < flock.length; i++) {
       // Only xwings can shoot
       currBoid = flock[i];
-      if (currBoid.alive && !currBoid.type && this.type) {
+      if (currBoid.alive && (currBoid.type !== this.type)) {
         const dist = this.position.distanceTo(currBoid.position);
         if (dist < neighborRange) {
-          tempVector.subVectors(currBoid.position.clone().add(currBoid.velocity), this.position).add(currBoid.velocity);
-          this.bullet = new Bullet(this.position.toArray(), tempVector.toArray(), scene);
+          tempVector.subVectors(
+            currBoid.position.clone().add(currBoid.velocity),
+            this.position).add(currBoid.velocity);
+          this.bullet = new Bullet(
+            this.position.toArray(),
+            tempVector.toArray(),
+            currBoid.type,
+            scene);
           this.lastBulletEmit = currentT;
           return;
         }
@@ -77,7 +83,7 @@ Boid.prototype.shootBullets = function (flock, scene) {
   }
 };
 
-Boid.prototype.updateBullets = function (scene) {
+Boid.prototype.updateBullets = function () {
   if (this.bullet) {
     if (this.bullet.alive) {
       this.bullet.step();
@@ -88,7 +94,10 @@ Boid.prototype.updateBullets = function (scene) {
 };
 
 Boid.prototype.updateHome = function () {
-  this.homeIndex = (this.homeIndex + 1) % (this.type ? hothHomes.length : yavinHomes.length);
+  // this.homeIndex = (this.homeIndex + 1) % (this.type ? hothHomes.length : yavinHomes.length);
+  this.homeIndex = this.type ?
+    Math.floor(getRandInRange(0, hothHomes.length)) :
+    Math.floor(getRandInRange(0, yavinHomes.length));
   this.home = this.type ?
     hothHomes[this.homeIndex]
     : yavinHomes[this.homeIndex];
@@ -99,11 +108,11 @@ Boid.prototype.updateAliveStatus = function (flock, explosions, scene) {
   let currBoid;
   for (let i = 0; i < flock.length; i++) {
     currBoid = flock[i];
-    if (currBoid.type && !this.type && currBoid.bullet) {
+    if (currBoid.bullet && currBoid.bullet.alive && (currBoid.type !== this.type)) {
       if (currBoid.bullet.position.distanceTo(this.position) < explosionDistance) {
-        explosions.push(new Explosion(this.position.toArray(), scene));
-        console.log('BOOM');
+        explosions.push(new Explosion(this.position.toArray(), this.type, scene));
         this.alive = false;
+        currBoid.bullet.alive = false;
         this.obj.mesh.traverse((obj) => {
           obj.visible = false;
         });
@@ -119,16 +128,13 @@ Boid.prototype.step = function (flock, spheres, explosions, scene) {
   if (this.alive) {
     this.accumulate(flock, spheres);
     // if (!this.type) {
-      this.update();
+    this.update();
     // }
-    if (this.type) {
-      this.shootBullets(flock, scene);
-    } else {
-      this.updateAliveStatus(flock, explosions, scene);
-    }
-    this.updateBullets(scene);
+    this.shootBullets(flock, scene);
+    this.updateAliveStatus(flock, explosions, scene);
     this.obj.mesh.position.set(this.position.x, this.position.y, this.position.z);
   }
+  this.updateBullets(scene);
 };
 
 // Apply Forces

@@ -2,11 +2,12 @@ import * as T from 'three';
 
 const movementSpeed = 10;
 const totalObjects = 100;
-const objectSize = 3;
+const objectSize = 4;
 const dirs = [];
-const colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
+const xwingColors = 0xFFFFFF;
+const tieFigherColors = 0x5ab3fc;
 
-export default function ExplodeAnimation(position, scene) {
+export default function ExplodeAnimation(position, type, scene) {
   const geometry = new T.Geometry();
   this.clock = new T.Clock();
   this.scene = scene;
@@ -24,7 +25,7 @@ export default function ExplodeAnimation(position, scene) {
   }
   const material = new T.PointsMaterial({
     size: objectSize,
-    color: colors[Math.round(Math.random() * colors.length)],
+    color: type ? xwingColors : tieFigherColors,
   });
   const particles = new T.Points(geometry, material);
 
